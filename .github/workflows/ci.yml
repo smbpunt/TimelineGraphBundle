@@ -1,0 +1,26 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+jobs:
+    qa:
+        name: QA (PHP ${{ matrix.php }})
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php: ['8.4', '8.5']
+        steps:
+            -   uses: actions/checkout@v5
+
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    extensions: opentelemetry
+                    coverage: none
+
+            -   uses: ramsey/composer-install@v3
+
+            -   run: make qa

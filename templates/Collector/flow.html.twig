@@ -1,0 +1,113 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block head %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ app.request.basePath }}/bundles/timelinegraph/flow.css">
+{% endblock %}
+
+{% block toolbar %}
+    {% set flow = collector.flow %}
+    {% if flow %}
+        {% set icon %}
+            {{ source('@TimelineGraph/Collector/icon.svg') }}
+            <span class="sf-toolbar-value">{{ collector.available ? flow.callCount : 'n/a' }}</span>
+            <span class="sf-toolbar-label">calls</span>
+        {% endset %}
+
+        {% set text %}
+            {% if collector.available %}
+                <div class="sf-toolbar-info-piece">
+                    <b>Calls</b>
+                    <span class="sf-toolbar-status">{{ flow.callCount }}{{ flow.truncated ? ' (truncated)' }}</span>
+                </div>
+                <div class="sf-toolbar-info-piece">
+                    <b>Boxes</b>
+                    <span class="sf-toolbar-status">{{ flow.nodeCount }}</span>
+                </div>
+            {% else %}
+                <div class="sf-toolbar-info-piece">
+                    <b>Timeline Graph</b>
+                    <span>opentelemetry extension missing</span>
+                </div>
+            {% endif %}
+        {% endset %}
+
+        {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', {link: profiler_url, status: flow.hasError ? 'red' : 'normal'}) }}
+    {% endif %}
+{% endblock %}
+
+{% block menu %}
+    {% set flow = collector.flow %}
+    <span class="label{{ not collector.available or not flow or flow.callCount == 0 ? ' disabled' }}{{ flow and flow.hasError ? ' label-status-error' }}">
+        <span class="icon">{{ source('@TimelineGraph/Collector/icon.svg') }}</span>
+        <strong>Timeline Graph</strong>
+        {% if flow and collector.available %}
+            <span class="count">{{ flow.callCount }}</span>
+        {% endif %}
+    </span>
+{% endblock %}
+
+{% block panel %}
+    {% set flow = collector.flow %}
+    <h2>Timeline Graph</h2>
+
+    {% if not collector.available %}
+        <div class="empty empty-panel">
+            <p>The <code>opentelemetry</code> PHP extension is missing: no calls are traced.</p>
+        </div>
+    {% elseif not flow or flow.callCount == 0 %}
+        <div class="empty empty-panel">
+            <p>No traced calls for this request.</p>
+        </div>
+    {% else %}
+        <div class="metrics">
+            <div class="metric">
+                <span class="value">{{ flow.callCount }}</span>
+                <span class="label">Calls</span>
+            </div>
+            <div class="metric">
+                <span class="value">{{ flow.nodeCount }}</span>
+                <span class="label">Boxes</span>
+            </div>
+            <div class="metric">
+                <span class="value">{{ '%0.1f'|format(flow.durationMs) }} <span class="unit">ms</span></span>
+                <span class="label">Traced time</span>
+            </div>
+        </div>
+
+        {% if flow.truncated %}
+            <div class="alert alert-warning">Flow truncated: only the first {{ flow.callCount }} calls are recorded (option <code>max_calls</code>).</div>
+        {% endif %}
+
+        <div class="timeline-graph" data-timeline-graph>
+            <div class="timeline-graph-controls" role="toolbar" aria-label="Player">
+                <button type="button" class="btn btn-sm" data-action="restart" title="Replay from the start">⏮</button>
+                <button type="button" class="btn btn-sm" data-action="back" title="Step back (←)">◀︎</button>
+                <button type="button" class="btn btn-sm timeline-graph-play" data-action="play" title="Play / pause (space)">▶︎ Play</button>
+                <button type="button" class="btn btn-sm" data-action="forward" title="Step forward (→)">▶︎❙</button>
+                <label class="timeline-graph-speed">
+                    Speed
+                    <select data-action="speed">
+                        <option value="0.1">0.1×</option>
+                        <option value="0.25">0.25×</option>
+                        <option value="0.5" selected>0.5×</option>
+                        <option value="1">1×</option>
+                    </select>
+                </label>
+                <input type="range" class="timeline-graph-scrub" data-action="scrub" min="0" max="0" value="0" aria-label="Position in the flow">
+                <span class="timeline-graph-hint">Click a box to toggle a breakpoint</span>
+            </div>
+            <div class="timeline-graph-canvas" data-role="canvas">
+                <p class="timeline-graph-loading">Laying out the graph…</p>
+            </div>
+            <div class="timeline-graph-banner" data-role="banner" aria-live="polite"></div>
+            <script type="application/json" data-role="data">{{ collector.flowJson|raw }}</script>
+        </div>
+
+        {# elkjs is not bundled (Symfony best practices): pinned version, checked by its hash. #}
+        <script src="https://cdn.jsdelivr.net/npm/elkjs@0.12.0/lib/elk.bundled.js" integrity="sha384-ww57TDqx4cGknIavPm0QKO+aygLUR1BLSn2Vhbnt1XdYKWcwLyWTFKX7aZMaKIi2" crossorigin="anonymous"></script>
+        <script src="{{ app.request.basePath }}/bundles/timelinegraph/breakpoints.js"></script>
+        <script src="{{ app.request.basePath }}/bundles/timelinegraph/flow-view.js"></script>
+        <script src="{{ app.request.basePath }}/bundles/timelinegraph/flow-player.js"></script>
+    {% endif %}
+{% endblock %}

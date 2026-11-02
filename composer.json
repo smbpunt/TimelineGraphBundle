@@ -1,0 +1,59 @@
+{
+    "name": "smbpunt/timeline-graph-bundle",
+    "description": "Symfony profiler panel that draws how a request flows through your services, and replays it step by step.",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "keywords": ["symfony", "bundle", "profiler", "debug", "call-graph", "timeline"],
+    "homepage": "https://github.com/smbpunt/TimelineGraphBundle",
+    "authors": [
+        { "name": "smbpunt", "homepage": "https://github.com/smbpunt" }
+    ],
+    "require": {
+        "php": ">=8.4",
+        "symfony/config": "^8.0",
+        "symfony/dependency-injection": "^8.0",
+        "symfony/framework-bundle": "^8.0",
+        "symfony/http-foundation": "^8.0",
+        "symfony/http-kernel": "^8.0",
+        "symfony/service-contracts": "^3.5"
+    },
+    "require-dev": {
+        "doctrine/dbal": "^4.2",
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpstan/phpstan-symfony": "^2.0",
+        "phpunit/phpunit": "^13.2",
+        "rector/rector": "^2.4",
+        "symfony/browser-kit": "^8.0",
+        "symfony/css-selector": "^8.0",
+        "symfony/http-client": "^8.0",
+        "symfony/twig-bundle": "^8.0",
+        "symfony/web-profiler-bundle": "^8.0"
+    },
+    "suggest": {
+        "ext-opentelemetry": "Required to record calls (method hooks).",
+        "symfony/web-profiler-bundle": "Displays the Timeline Graph panel."
+    },
+    "autoload": {
+        "psr-4": {
+            "Smbpunt\\TimelineGraphBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Smbpunt\\TimelineGraphBundle\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
+    }
+}

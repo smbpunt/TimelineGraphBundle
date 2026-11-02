@@ -1,0 +1,14 @@
+parameters:
+    level: 6
+    treatPhpDocTypesAsCertain: false
+    paths:
+        - config
+        - src
+        - tests
+    ignoreErrors:
+        -
+            identifier: missingType.iterableValue
+            path: src/TimelineGraphBundle.php
+    scanFiles:
+        # Function provided by the opentelemetry extension
+        - stubs/opentelemetry.stub

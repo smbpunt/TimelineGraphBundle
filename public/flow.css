@@ -1,0 +1,397 @@
+/* Timeline Graph profiler panel. Follows the profiler light or dark theme (theme-dark class on body). */
+
+.timeline-graph {
+    --tg-canvas: #f7f8fa;
+    --tg-dot: #e2e5ea;
+    --tg-card: #ffffff;
+    --tg-card-border: #d9dde3;
+    --tg-text: #1f2328;
+    --tg-muted: #6a737d;
+    --tg-edge: #a3acb7;
+    --tg-group: #b8c0ca;
+    --tg-group-text: #6a737d;
+    --tg-label-bg: #ffffff;
+    --tg-accent: #2563eb;
+    --tg-accent-soft: rgba(37, 99, 235, .14);
+    --tg-error: #dc2626;
+    --tg-banner: #ffffff;
+    --tg-shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .1);
+
+    margin-top: 16px;
+    color: var(--tg-text);
+}
+
+.theme-dark .timeline-graph {
+    --tg-canvas: #1d2024;
+    --tg-dot: #2c3036;
+    --tg-card: #2a2e34;
+    --tg-card-border: #41474f;
+    --tg-text: #e6edf3;
+    --tg-muted: #9aa4af;
+    --tg-edge: #5f6874;
+    --tg-group: #4c535c;
+    --tg-group-text: #9aa4af;
+    --tg-label-bg: #2a2e34;
+    --tg-accent: #60a5fa;
+    --tg-accent-soft: rgba(96, 165, 250, .18);
+    --tg-error: #ff7b72;
+    --tg-banner: #2a2e34;
+    --tg-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+}
+
+/* Controls */
+.timeline-graph-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.timeline-graph-controls .btn {
+    min-width: 36px;
+    font-variant-emoji: text;
+}
+
+.timeline-graph-play {
+    min-width: 92px !important;
+}
+
+.timeline-graph-play.is-playing {
+    background: var(--tg-accent);
+    border-color: var(--tg-accent);
+    color: #fff;
+}
+
+.timeline-graph-speed {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 6px;
+    font-size: 13px;
+    color: var(--tg-muted);
+}
+
+.timeline-graph-scrub {
+    flex: 1 1 160px;
+    min-width: 120px;
+    accent-color: var(--tg-accent);
+}
+
+.timeline-graph-hint {
+    font-size: 12px;
+    color: var(--tg-muted);
+}
+
+/* Graph area */
+.timeline-graph-canvas {
+    overflow: auto;
+    max-height: 75vh;
+    padding: 12px;
+    border: 1px solid var(--tg-card-border);
+    border-radius: 10px;
+    background-color: var(--tg-canvas);
+    background-image: radial-gradient(var(--tg-dot) 1px, transparent 1px);
+    background-size: 16px 16px;
+}
+
+.timeline-graph-loading {
+    margin: 24px;
+    color: var(--tg-muted);
+}
+
+.timeline-graph-svg {
+    display: block;
+    max-width: none;
+    margin: 0 auto;
+    font-family: var(--font-family-system, system-ui, sans-serif);
+}
+
+/* Feature frames */
+.tg-group-frame {
+    fill: none;
+    stroke: var(--tg-group);
+    stroke-width: 1.25;
+    stroke-dasharray: 5 4;
+}
+
+.tg-group-title {
+    fill: var(--tg-group-text);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+/* Cards */
+.tg-node {
+    --tg-tint: #64748b;
+    cursor: pointer;
+    transition: opacity .25s;
+}
+
+.tg-node.is-request {
+    cursor: default;
+}
+
+.tg-tint-request { --tg-tint: #334155; }
+.tg-tint-blue { --tg-tint: #2563eb; }
+.tg-tint-violet { --tg-tint: #7c3aed; }
+.tg-tint-teal { --tg-tint: #0d9488; }
+.tg-tint-orange { --tg-tint: #ea580c; }
+.tg-tint-pink { --tg-tint: #db2777; }
+.tg-tint-brown { --tg-tint: #a16207; }
+.tg-tint-green { --tg-tint: #16a34a; }
+.tg-tint-amber { --tg-tint: #d97706; }
+.tg-tint-red { --tg-tint: #dc2626; }
+.tg-tint-indigo { --tg-tint: #4f46e5; }
+.tg-tint-slate { --tg-tint: #475569; }
+.tg-tint-gray { --tg-tint: #64748b; }
+
+.theme-dark .tg-tint-request { --tg-tint: #cbd5e1; }
+.theme-dark .tg-tint-blue { --tg-tint: #60a5fa; }
+.theme-dark .tg-tint-violet { --tg-tint: #a78bfa; }
+.theme-dark .tg-tint-teal { --tg-tint: #2dd4bf; }
+.theme-dark .tg-tint-orange { --tg-tint: #fb923c; }
+.theme-dark .tg-tint-pink { --tg-tint: #f472b6; }
+.theme-dark .tg-tint-brown { --tg-tint: #facc15; }
+.theme-dark .tg-tint-green { --tg-tint: #4ade80; }
+.theme-dark .tg-tint-amber { --tg-tint: #fbbf24; }
+.theme-dark .tg-tint-red { --tg-tint: #f87171; }
+.theme-dark .tg-tint-indigo { --tg-tint: #818cf8; }
+.theme-dark .tg-tint-slate { --tg-tint: #94a3b8; }
+.theme-dark .tg-tint-gray { --tg-tint: #94a3b8; }
+
+.tg-card {
+    fill: var(--tg-card);
+    stroke: var(--tg-card-border);
+    stroke-width: 1;
+    filter: drop-shadow(0 1px 2px rgba(16, 24, 40, .08));
+    transition: stroke .2s, stroke-width .2s;
+}
+
+.tg-node:hover .tg-card,
+.tg-node:focus-visible .tg-card {
+    stroke: var(--tg-tint);
+}
+
+.tg-node:focus {
+    outline: none;
+}
+
+.tg-icon-tile {
+    fill: var(--tg-tint);
+    fill-opacity: .13;
+}
+
+.tg-icon {
+    fill: none;
+    stroke: var(--tg-tint);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.tg-node-title {
+    fill: var(--tg-text);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.tg-node-subtitle {
+    fill: var(--tg-muted);
+    font-size: 11px;
+}
+
+.tg-share-track {
+    fill: var(--tg-card-border);
+    opacity: .6;
+}
+
+.tg-share {
+    fill: var(--tg-tint);
+}
+
+.tg-breakpoint {
+    fill: var(--tg-error);
+    stroke: var(--tg-card);
+    stroke-width: 2;
+    opacity: 0;
+    transition: opacity .15s;
+}
+
+.tg-node:hover .tg-breakpoint {
+    opacity: .25;
+}
+
+.tg-node.has-breakpoint .tg-breakpoint {
+    opacity: 1;
+}
+
+.tg-node.has-error .tg-card {
+    stroke: var(--tg-error);
+    stroke-width: 1.5;
+}
+
+/* Arrows */
+.tg-edge-path {
+    fill: none;
+    stroke: var(--tg-edge);
+    stroke-width: 1.5;
+    transition: stroke .2s, opacity .25s;
+}
+
+.tg-arrow {
+    fill: var(--tg-edge);
+}
+
+.tg-arrow-error,
+.tg-edge.has-error .tg-edge-path {
+    stroke: var(--tg-error);
+}
+
+.tg-arrow-error {
+    fill: var(--tg-error);
+    stroke: none;
+}
+
+.tg-arrow-current {
+    fill: var(--tg-accent);
+}
+
+.tg-edge-label {
+    transition: opacity .25s;
+}
+
+.tg-edge-label-bg {
+    fill: var(--tg-label-bg);
+    stroke: var(--tg-card-border);
+}
+
+.tg-edge-label text {
+    fill: var(--tg-muted);
+    font-family: var(--font-family-monospace, ui-monospace, monospace);
+    font-size: 11px;
+}
+
+.tg-edge-label.has-error text {
+    fill: var(--tg-error);
+}
+
+.tg-edge-label.has-error .tg-edge-label-bg {
+    stroke: var(--tg-error);
+}
+
+/* Playing: what is not visited yet fades out */
+.is-started .tg-node:not(.is-visited),
+.is-started .tg-edge:not(.is-visited),
+.is-started .tg-edge-label:not(.is-visited) {
+    opacity: .3;
+}
+
+.tg-node.is-active .tg-card {
+    stroke: var(--tg-accent);
+    stroke-width: 1.5;
+}
+
+.tg-node.is-current .tg-card {
+    stroke: var(--tg-accent);
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 6px var(--tg-accent-soft));
+}
+
+.tg-edge.is-current .tg-edge-path {
+    stroke: var(--tg-accent);
+    stroke-width: 2.5;
+}
+
+.tg-edge-label.is-current .tg-edge-label-bg {
+    stroke: var(--tg-accent);
+    fill: var(--tg-accent);
+}
+
+.tg-edge-label.is-current text {
+    fill: #fff;
+}
+
+.tg-token {
+    fill: var(--tg-accent);
+    stroke: var(--tg-card);
+    stroke-width: 2;
+    filter: drop-shadow(0 0 4px var(--tg-accent));
+}
+
+.tg-token.has-error {
+    fill: var(--tg-error);
+    filter: drop-shadow(0 0 4px var(--tg-error));
+}
+
+.tg-node.is-flash .tg-card {
+    animation: tg-flash .9s ease-out 2;
+}
+
+@keyframes tg-flash {
+    0% { stroke: var(--tg-error); stroke-width: 4; }
+    100% { stroke-width: 1.5; }
+}
+
+/* Bottom banner */
+.timeline-graph-banner {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    margin-top: 10px;
+    padding: 8px 14px;
+    border: 1px solid var(--tg-card-border);
+    border-radius: 10px;
+    background: var(--tg-banner);
+    box-shadow: var(--tg-shadow);
+    font-size: 13px;
+}
+
+.tg-banner-step {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--tg-muted);
+}
+
+.tg-banner-direction {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.tg-banner-direction.is-enter {
+    background: var(--tg-accent-soft);
+    color: var(--tg-accent);
+}
+
+.tg-banner-direction.is-leave {
+    background: rgba(100, 116, 139, .16);
+    color: var(--tg-muted);
+}
+
+.tg-banner-duration {
+    font-variant-numeric: tabular-nums;
+    color: var(--tg-muted);
+}
+
+.tg-banner-detail {
+    font-family: var(--font-family-monospace, ui-monospace, monospace);
+    font-size: 12px;
+    color: var(--tg-muted);
+}
+
+.tg-banner-error,
+.tg-banner-breakpoint {
+    font-weight: 600;
+    color: var(--tg-error);
+}

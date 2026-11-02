@@ -1,0 +1,10 @@
+<?php
+
+namespace OpenTelemetry\Instrumentation;
+
+/**
+ * Provided by the opentelemetry PHP extension.
+ */
+function hook(?string $class, string $function, ?\Closure $pre = null, ?\Closure $post = null): bool
+{
+}
